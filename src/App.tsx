@@ -1059,6 +1059,18 @@ export default function App() {
 
       const data = await response.json();
 
+      if (data.isChatOnly) {
+        const aiMsg: ChatMessage = {
+          id: 'msg-' + (Date.now() + 1),
+          role: 'assistant',
+          text: data.explanation || 'Halo! Ada yang bisa saya bantu?',
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+        setChatMessages(prev => [...prev, aiMsg]);
+        setMainViewMode('chat');
+        return;
+      }
+
       let appCode = data.code;
       let appTitle = data.title || ('Aplikasi ' + finalPrompt.slice(0, 20));
       let appExp = data.explanation || `Aplikasi "${appTitle}" berhasil dirancang oleh Bara Dev AI.`;
@@ -1393,7 +1405,7 @@ export default function App() {
         
         {/* VIEW 1: CHAT & PREVIEW (MAIN LANDING) */}
         {activeTab === 'chat' && (
-          <div className="flex-1 flex flex-col overflow-hidden pb-28">
+          <div className="flex-1 flex flex-col overflow-hidden">
             
             {/* Top Bar Tabs if chat has messages or code generated */}
             {(chatMessages.length > 0 || currentCode) && (
@@ -1432,40 +1444,9 @@ export default function App() {
                   </button>
                 </div>
 
-                {/* Title & Quick Actions */}
-                <div className="hidden md:flex items-center gap-2">
+                {/* Title */}
+                <div className="flex items-center gap-2">
                   <span className="text-xs font-bold text-gray-300 truncate max-w-xs">{currentTitle || 'Bara Dev Chat'}</span>
-                </div>
-
-                <div className="flex items-center gap-1.5">
-                  {currentCode && (
-                    <>
-                      <button
-                        onClick={handleCopyCode}
-                        className="px-2.5 py-1 rounded-lg bg-[#14141a] hover:bg-gray-800 text-gray-300 text-xs font-medium border border-gray-800 flex items-center gap-1 transition cursor-pointer"
-                        title={t.copyCode}
-                      >
-                        {copiedCodeToast ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                        <span className="hidden sm:inline">{copiedCodeToast ? t.copied : t.copyCode}</span>
-                      </button>
-
-                      <button
-                        onClick={handleDownloadHtml}
-                        className="p-1.5 rounded-lg bg-[#14141a] hover:bg-gray-800 text-gray-300 border border-gray-800 transition cursor-pointer"
-                        title={t.downloadHtml}
-                      >
-                        <Download className="w-3.5 h-3.5" />
-                      </button>
-
-                      <button
-                        onClick={handleOpenNewTab}
-                        className="p-1.5 rounded-lg bg-[#14141a] hover:bg-gray-800 text-gray-300 border border-gray-800 transition cursor-pointer"
-                        title={t.openNewTab}
-                      >
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </button>
-                    </>
-                  )}
                 </div>
               </div>
             )}
@@ -1503,7 +1484,7 @@ export default function App() {
                 </div>
               ) : mainViewMode === 'chat' ? (
                 /* CHAT MESSAGES HISTORY STREAM */
-                <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 max-w-3xl mx-auto w-full">
+                <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-32 space-y-4 max-w-3xl mx-auto w-full">
                   {chatMessages.map((msg) => (
                     <div
                       key={msg.id}

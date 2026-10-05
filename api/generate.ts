@@ -12,6 +12,30 @@ const ai = new GoogleGenAI({
   },
 });
 
+function isGreetingOrGeneralChat(prompt: string): boolean {
+  const p = prompt.trim().toLowerCase();
+  const greetings = [
+    "hai", "halo", "hi", "hello", "p", "hey", "siapa kamu", "apa kabar",
+    "terima kasih", "makasih", "thanks", "thank you", "selamat pagi",
+    "selamat siang", "selamat malam", "siapa anda", "tes", "test", "ping"
+  ];
+
+  if (greetings.includes(p)) return true;
+
+  const appActionKeywords = [
+    "buat", "bikin", "design", "landing", "app", "aplikasi", "web", "website",
+    "toko", "kasir", "tambah", "ubah", "ganti", "form", "page", "halaman",
+    "button", "fitur", "menu", "desain", "tampilkan", "perbaiki", "modal", "kategori"
+  ];
+
+  const hasAppKeyword = appActionKeywords.some(kw => p.includes(kw));
+  if (!hasAppKeyword && p.length < 15) {
+    return true;
+  }
+
+  return false;
+}
+
 // Dynamic Fallback App Generator
 function generateFallbackCode(prompt: string): { title: string; explanation: string; code: string } {
   const cleanPrompt = (prompt || 'Aplikasi Web').trim();
@@ -113,7 +137,6 @@ function generateFallbackCode(prompt: string): { title: string; explanation: str
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Support CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -131,6 +154,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (!prompt || typeof prompt !== 'string') {
       return res.status(400).json({ error: 'Prompt is required' });
+    }
+
+    if (isGreetingOrGeneralChat(prompt)) {
+      const lowerP = prompt.trim().toLowerCase();
+      let reply = "Halo! Ada yang bisa saya bantu untuk membuat atau mengembangkan aplikasi/website impianmu hari ini? 😊";
+      if (lowerP.includes("terima kasih") || lowerP.includes("makasih") || lowerP.includes("thanks")) {
+        reply = "Sama-sama! Senang bisa membantu. Jika ingin menambahkan fitur baru atau buat proyek lain, beri tahu saya ya! 🙌";
+      } else if (lowerP.includes("siapa kamu") || lowerP.includes("siapa anda")) {
+        reply = "Saya adalah Bara Dev AI - Pembuat Aplikasi & Website otomatis dari obrolan chat. Sebutkan ide aplikasimu dan saya akan langsung merancangnya!";
+      }
+
+      return res.status(200).json({
+        isChatOnly: true,
+        title: "Chat Bara Dev",
+        explanation: reply,
+        code: null
+      });
     }
 
     const defaultSysPrompt = `Kamu adalah Bara Dev AI - Pembuat Aplikasi & Website AI Senior terkemuka.
