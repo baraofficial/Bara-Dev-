@@ -163,6 +163,7 @@ const TRANSLATIONS = {
     useTemplate: "Gunakan Template",
     createdOn: "Dibuat pada",
     deleteProject: "Hapus",
+    uploadImageTooltip: "Upload foto referensi (PNG/JPG)",
     generatingMessage: "Bara Dev AI sedang merancang & mengode aplikasi kamu...",
     suggestions: [
       "Landing Page Warung Makan Modern dengan Menu Interaktif & WA",
@@ -218,6 +219,7 @@ const TRANSLATIONS = {
     useTemplate: "Use Template",
     createdOn: "Created on",
     deleteProject: "Delete",
+    uploadImageTooltip: "Upload reference photo (PNG/JPG)",
     generatingMessage: "Bara Dev AI is designing & coding your app...",
     suggestions: [
       "Modern Food Stall Landing Page with Interactive Menu & WA Order",
