@@ -1,0 +1,6 @@
+{
+  "name": "Bara Dev",
+  "description": "Bara Dev - Platform AI Pembuat Aplikasi & Website dari Chat",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
